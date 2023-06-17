@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 from dbhelper import DB
 
 db = DB()
@@ -80,6 +81,14 @@ def load_overall_analysis():
     ax6.bar(y3.index,y3.values)
     plt.xticks(rotation=45)
     st.pyplot(fig6)
+
+    #funding heatmap
+    fig7,ax7=plt.subplots()
+    st.subheader('Heatmap Funding')
+    data_matrix=df[['year','amount']].corr()
+    sns.heatmap(data_matrix,annot=True, cmap='coolwarm')
+    st.pyplot(fig7)
+
 
 
 def load_investor_details(investor):
