@@ -4,12 +4,13 @@ import matplotlib.pyplot as plt
 from dbhelper import DB
 
 db = DB()
-df = pd.read_csv(r'C:\Users\HP\Downloads\startup_cleaned.csv')
+df = pd.read_csv(r'C:\Users\HP\Desktop\Project -Tags\Indian_StartUp_Analyis\startup_cleaned.csv')
 
 st.sidebar.title('Startup Funding Analysis')
-df['date'] = pd.to_datetime(df['date'],errors='coerce')
+df['date'] = pd.to_datetime(df['date'], errors='coerce')
 df['year'] = df['date'].dt.year
 df['month'] = df['date'].dt.month
+
 
 def load_overall_analysis():
     st.title('Overall Analysis')
@@ -23,22 +24,21 @@ def load_overall_analysis():
     # total funded startups
     num_startups = df['startup'].nunique()
 
-    col1,col2,col3,col4 = st.columns(4)
+    col1, col2, col3, col4 = st.columns(4)
 
     with col1:
-        st.metric('Total',str(total) + ' Cr')
+        st.metric('Total', str(total) + ' Cr')
     with col2:
         st.metric('Max', str(max_funding) + ' Cr')
 
     with col3:
-        st.metric('Avg',str(round(avg_funding)) + ' Cr')
+        st.metric('Avg', str(round(avg_funding)) + ' Cr')
 
     with col4:
-        st.metric('Funded Startups',num_startups)
-
+        st.metric('Funded Startups', num_startups)
 
     st.header('MoM graph')
-    selected_option = st.selectbox('Select Type',['Total','Count'])
+    selected_option = st.selectbox('Select Type', ['Total', 'Count'])
     if selected_option == 'Total':
         temp_df = df.groupby(['year', 'month'])['amount'].sum().reset_index()
     else:
@@ -50,6 +50,37 @@ def load_overall_analysis():
     ax3.plot(temp_df['x_axis'], temp_df['amount'])
 
     st.pyplot(fig3)
+    # top invested sector
+    fig4, ax4 = plt.subplots()
+    st.subheader('Top Sectors Money Invested')
+    x1 = df.groupby('vertical')['amount'].sum().sort_values(ascending=False).head(5)
+    ax4.pie(x1, labels=x1.index, autopct='%.2f')
+    st.pyplot(fig4)
+    # number of startups in top setors
+    fig5, ax5 = plt.subplots()
+    st.subheader('Number StartUps in top Sectors')
+    x2 = df.groupby('vertical')['startup'].count().sort_values(ascending=False).head(5)
+    ax5.pie(x1, labels=x1.index, autopct=lambda pct: f'{int(pct / 100 * x2.sum())} ({pct:.2f}%)')
+    st.pyplot(fig5)
+    # types of funding
+    st.subheader('Types of funding')
+    y = df['round'].value_counts()
+    st.dataframe(y)
+    # citywise funding
+    st.subheader('Citywise Funding')
+    y1 = df.groupby(['city', 'round'])['startup'].count()
+    st.dataframe(y1)
+    # top startups yearwise
+    y2 = df.groupby(['year', 'startup'])['amount'].sum().groupby('year').nlargest(3)
+    st.dataframe(y2)
+
+    # top investors(bar graph)
+    fig6, ax6 = plt.subplots(figsize=(10,6))
+    y3 = df.groupby('investors')['amount'].sum().head(3)
+    ax6.bar(y3.index,y3.values)
+    plt.xticks(rotation=45)
+    st.pyplot(fig6)
+
 
 def load_investor_details(investor):
     # load recent 5 investments
@@ -59,7 +90,7 @@ def load_investor_details(investor):
         ['date', 'startup', 'vertical', 'city', 'round', 'amount']]
     st.subheader('Most Recent Investments')
     st.dataframe(last5_df)
-    col1, col2,col3,col4 = st.columns(4)
+    col1, col2, col3, col4 = st.columns(4)
     with col1:
         # biggest investments
         big_series = df[df['investors'].str.contains(investor)].groupby('startup')['amount'].sum().sort_values(
@@ -105,11 +136,11 @@ def load_investor_details(investor):
 
         st.pyplot(fig2)
 
-    similar_investors=df[df['vertical'].isin(df[df['investors'] == 'Sequoia Capital India']['vertical'].values)]['investors'].head(5)
+    similar_investors = df[df['vertical'].isin(df[df['investors'] == 'Sequoia Capital India']['vertical'].values)][
+        'investors'].head(5)
     st.subheader('Similar investors')
     st.subheader('Similar investors')
     st.dataframe(similar_investors)
-
 
 
 option = st.sidebar.selectbox('Select One', ['Overall Analysis', 'StartUp', 'Investor'])
