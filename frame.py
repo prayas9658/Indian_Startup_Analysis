@@ -76,18 +76,41 @@ def load_overall_analysis():
     st.dataframe(y2)
 
     # top investors(bar graph)
-    fig6, ax6 = plt.subplots(figsize=(10,6))
+    fig6, ax6 = plt.subplots(figsize=(10, 6))
     y3 = df.groupby('investors')['amount'].sum().head(3)
-    ax6.bar(y3.index,y3.values)
+    ax6.bar(y3.index, y3.values)
     plt.xticks(rotation=45)
     st.pyplot(fig6)
 
-    #funding heatmap
-    fig7,ax7=plt.subplots()
+    # funding heatmap
+    fig7, ax7 = plt.subplots()
     st.subheader('Heatmap Funding')
-    data_matrix=df[['year','amount']].corr()
-    sns.heatmap(data_matrix,annot=True, cmap='coolwarm')
+    data_matrix = df[['year', 'amount']].corr()
+    sns.heatmap(data_matrix, annot=True, cmap='coolwarm')
     st.pyplot(fig7)
+
+
+def load_start_up_details(startup):
+    st.title(startup)
+    col1,col2,col3=st.columns(3)
+    industry=df[df['startup']==startup]['vertical']
+    sub_industry=df[df['startup']==startup]['subvertical']
+    location=df[df['startup']==startup]['city']
+    with col1:
+        st.metric('Industry',str(industry))
+    with col2:
+        st.metric('Sub Industry', str(sub_industry))
+    with col3:
+        st.metric('Location',str(location))
+
+    st.subheader('Funding Rounds')
+    funding_details=df[df['startup']==startup][['date','round','investors']].reset_index(drop=True)
+    st.dataframe(funding_details)
+
+    st.subheader('Similar Companies')
+    vert=df[df['startup']==startup]['vertical']
+    st.dataframe(df[df['vertical']==str(vert)]['startup'])
+
 
 
 
@@ -158,9 +181,10 @@ if option == 'Overall Analysis':
     load_overall_analysis()
 
 elif option == 'StartUp':
-    st.sidebar.selectbox('Select StartUp', sorted(df['startup'].unique().tolist()))
+    selected_startup = st.sidebar.selectbox('Select StartUp', sorted(df['startup'].unique().tolist()))
     btn1 = st.sidebar.button('Find StartUp Details')
-    st.title('StartUp Analysis')
+    if btn1:
+        load_start_up_details(selected_startup)
 else:
     selected_investor = st.sidebar.selectbox('Select Investor', sorted(set(df['investors'].str.split(',').sum())))
     btn2 = st.sidebar.button('Find Investor Details')
