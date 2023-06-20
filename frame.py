@@ -93,9 +93,9 @@ def load_overall_analysis():
 def load_start_up_details(startup):
     st.title(startup)
     col1,col2,col3=st.columns(3)
-    industry=df[df['startup']==startup]['vertical']
-    sub_industry=df[df['startup']==startup]['subvertical']
-    location=df[df['startup']==startup]['city']
+    industry=df[df['startup']==startup]['vertical'].values[0]
+    sub_industry=df[df['startup']==startup]['subvertical'].values[0]
+    location=df[df['startup']==startup]['city'].values[0]
     with col1:
         st.metric('Industry',str(industry))
     with col2:
@@ -108,8 +108,8 @@ def load_start_up_details(startup):
     st.dataframe(funding_details)
 
     st.subheader('Similar Companies')
-    vert=df[df['startup']==startup]['vertical']
-    st.dataframe(df[df['vertical']==str(vert)]['startup'])
+    vert=df[df['startup']==startup]['vertical'].values[0]
+    st.dataframe(df[df['vertical']==vert]['startup'].reset_index(drop=True))
 
 
 
