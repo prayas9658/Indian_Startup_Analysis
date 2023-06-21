@@ -35,7 +35,7 @@ def load_overall_analysis():
         st.metric('Max', str(max_funding) + ' Cr')
 
     with col3:
-        st.markdown('<h2 style="color:orange;">Average</h2>', unsafe_allow_html=True)
+        st.markdown('<h2 style="color:orange;">Average Amount</h2>', unsafe_allow_html=True)
         st.metric('avg', str(round(avg_funding)) + ' Cr')
 
     with col4:
