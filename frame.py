@@ -14,7 +14,7 @@ df['month'] = df['date'].dt.month
 
 
 def load_overall_analysis():
-    st.title('Overall Analysis')
+    st.markdown('<h1 style="font-weight:bold; color:brown;">Overall Analysis</h1>', unsafe_allow_html=True)
 
     # total invested amount
     total = round(df['amount'].sum())
@@ -28,15 +28,19 @@ def load_overall_analysis():
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
-        st.metric('Total', str(total) + ' Cr')
+        st.markdown('<h2 style="color:blue;">Total Amount</h2>', unsafe_allow_html=True)
+        st.metric('total', str(total) + ' Cr')
     with col2:
+        st.markdown('<h2 style="color:green;">Maximum Amount</h2>', unsafe_allow_html=True)
         st.metric('Max', str(max_funding) + ' Cr')
 
     with col3:
-        st.metric('Avg', str(round(avg_funding)) + ' Cr')
+        st.markdown('<h2 style="color:orange;">Average</h2>', unsafe_allow_html=True)
+        st.metric('avg', str(round(avg_funding)) + ' Cr')
 
     with col4:
-        st.metric('Funded Startups', num_startups)
+        st.markdown('<h2 style="color:yellow;">Funded StartUps</h2>', unsafe_allow_html=True)
+        st.metric('Numbers', num_startups)
 
     st.header('MoM graph')
     selected_option = st.selectbox('Select Type', ['Total', 'Count'])
@@ -92,26 +96,24 @@ def load_overall_analysis():
 
 def load_start_up_details(startup):
     st.title(startup)
-    col1,col2,col3=st.columns(3)
-    industry=df[df['startup']==startup]['vertical'].values[0]
-    sub_industry=df[df['startup']==startup]['subvertical'].values[0]
-    location=df[df['startup']==startup]['city'].values[0]
+    col1, col2, col3 = st.columns(3)
+    industry = df[df['startup'] == startup]['vertical'].values[0]
+    sub_industry = df[df['startup'] == startup]['subvertical'].values[0]
+    location = df[df['startup'] == startup]['city'].values[0]
     with col1:
-        st.metric('Industry',str(industry))
+        st.metric('Industry', str(industry))
     with col2:
         st.metric('Sub Industry', str(sub_industry))
     with col3:
-        st.metric('Location',str(location))
+        st.metric('Location', str(location))
 
     st.subheader('Funding Rounds')
-    funding_details=df[df['startup']==startup][['date','round','investors']].reset_index(drop=True)
+    funding_details = df[df['startup'] == startup][['date', 'round', 'investors']].reset_index(drop=True)
     st.dataframe(funding_details)
 
     st.subheader('Similar Companies')
-    vert=df[df['startup']==startup]['vertical'].values[0]
-    st.dataframe(df[df['vertical']==vert]['startup'].reset_index(drop=True))
-
-
+    vert = df[df['startup'] == startup]['vertical'].values[0]
+    st.dataframe(df[df['vertical'] == vert]['startup'].reset_index(drop=True))
 
 
 def load_investor_details(investor):
