@@ -42,8 +42,11 @@ def load_overall_analysis():
         st.markdown('<h2 style="color:yellow;">Funded StartUps</h2>', unsafe_allow_html=True)
         st.metric('Numbers', num_startups)
 
-    st.header('MoM graph')
+    st.markdown('<h1 style="color:red;">MoM graph</h1>', unsafe_allow_html=True)
+    #st.header('MoM graph')
     selected_option = st.selectbox('Select Type', ['Total', 'Count'])
+
+
     if selected_option == 'Total':
         temp_df = df.groupby(['year', 'month'])['amount'].sum().reset_index()
     else:
@@ -51,10 +54,19 @@ def load_overall_analysis():
 
     temp_df['x_axis'] = temp_df['month'].astype('str') + '-' + temp_df['year'].astype('str')
 
-    fig3, ax3 = plt.subplots()
+    fig3, ax3 = plt.subplots(figsize=(21,12))
     ax3.plot(temp_df['x_axis'], temp_df['amount'])
 
+    # Set x-axis tick positions and labels
+    ax3.set_xticks(range(len(temp_df['x_axis'])))
+    ax3.set_xticklabels(temp_df['x_axis'], rotation=45,ha='right')
+
+    # Set labels for x-axis and y-axis
+    ax3.set_xlabel('Year-Month')
+    ax3.set_ylabel('Amount(Cr)')
+    plt.tight_layout()  # Adjust the spacing of subplots and labels
     st.pyplot(fig3)
+
     # top invested sector
     fig4, ax4 = plt.subplots()
     st.subheader('Top Sectors Money Invested')
